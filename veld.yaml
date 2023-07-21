@@ -1,0 +1,9 @@
+x-veld:
+  executable:
+
+services:
+  veld:
+    build: .
+    volumes:
+      - ./:/veld/executable
+    command: python /veld/executable/clean.py
