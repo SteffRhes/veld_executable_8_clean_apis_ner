@@ -102,11 +102,11 @@ def fix_borders(ent_list, text):
             ent_list_new.append(ent_new)
             if ent != ent_new:
                 print_and_log(
-                    f"replaced: {text[ent[0]:ent[1]].__repr__()},"
-                    f" with: {text[ent_new[0]:ent_new[1]].__repr__()}"
+                    f"replaced: {ent}, text: {text[ent[0]:ent[1]].__repr__()},"
+                    f" with: {ent_new}, text: {text[ent_new[0]:ent_new[1]].__repr__()}"
                 )
             else:
-                print_and_log(f"nothing replaced: {text[ent[0]:ent[1]].__repr__()}")
+                print_and_log(f"nothing replaced: {ent}, {text[ent[0]:ent[1]].__repr__()}")
             assert not (
                 text[ent_new[0]:ent_new[1]].startswith(" ")
                 or text[ent_new[0]:ent_new[1]].endswith(" ")
@@ -122,6 +122,8 @@ def deduplicate(ent_list):
     ent_list_new.sort(key=lambda x: x[2])
     ent_list_new.sort(key=lambda x: x[1])
     ent_list_new.sort(key=lambda x: x[0])
+    if ent_list != ent_list_new:
+        print_and_log(f"deduplicated from: {ent_list}, to: {ent_list_new}")
     return ent_list_new
     
 
@@ -145,6 +147,7 @@ def main():
         gd_list_new = []
         for gd in gd_list:
             text = gd["text_raw"]
+            print_and_log(f"cleaning ner data on text: {text.__repr__()}")
             ent_list = gd["entities"]
             ent_list = fix_borders(ent_list, text)
             ent_list = deduplicate(ent_list)
