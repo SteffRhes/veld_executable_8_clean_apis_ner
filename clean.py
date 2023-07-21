@@ -1,6 +1,12 @@
 import json
 import os
 import re
+import logging
+
+
+def print_and_log(msg):
+    print(msg)
+    logging.debug(msg)
 
 
 def fix_borders(ent_list, text):
@@ -59,8 +65,8 @@ def fix_borders(ent_list, text):
                 else:
                     i_step -= 1
                 i_step *= -1
-        # dedicated logic for the edge case of abbreviations. Checks if a given period is not a
-        # sentence boundary.
+        # dedicated logic for the edge case of abbreviations. If a given period is not a sentence
+        # boundary, it is included.
         if text[i_corrected] == "." and not re.compile(r'^\. *$', re.U).match(text[i_corrected:]):
             i_corrected += 1
         return i_corrected - 1
@@ -83,11 +89,8 @@ def fix_borders(ent_list, text):
             if text[i_b] == ")" and text_sub.count("(") > text_sub.count(")"):
                 ent_new = [i_a, i_b + 1, ent[2]]
         return ent_new
-        
+    
     def fix_borders_main(ent_list, text):
-        """
-        Function iterating, calling sub-functions, and comparing.
-        """
         ent_list_new = []
         for ent in ent_list:
             ent_new = [
@@ -98,12 +101,12 @@ def fix_borders(ent_list, text):
             ent_new = fix_parenthesis(ent_new, text)
             ent_list_new.append(ent_new)
             if ent != ent_new:
-                print(
+                print_and_log(
                     f"replaced: {text[ent[0]:ent[1]].__repr__()},"
                     f" with: {text[ent_new[0]:ent_new[1]].__repr__()}"
                 )
             else:
-                print(f"nothing replaced: {text[ent[0]:ent[1]].__repr__()}")
+                print_and_log(f"nothing replaced: {text[ent[0]:ent[1]].__repr__()}")
             assert not (
                 text[ent_new[0]:ent_new[1]].startswith(" ")
                 or text[ent_new[0]:ent_new[1]].endswith(" ")
@@ -111,14 +114,32 @@ def fix_borders(ent_list, text):
         return ent_list_new
     
     return fix_borders_main(ent_list, text)
-
+    
+def deduplicate(ent_list):
+    ent_list = [tuple(e) for e in ent_list]
+    ent_set = set(e for e in ent_list)
+    ent_list_new = list(ent_set)
+    ent_list_new.sort(key=lambda x: x[2])
+    ent_list_new.sort(key=lambda x: x[1])
+    ent_list_new.sort(key=lambda x: x[0])
+    return ent_list_new
+    
 
 def main():
+    
+    logging.basicConfig(
+        filename='/veld/output/2/clean.log',
+        filemode='w',
+        level=logging.DEBUG,
+        format='%(message)s',
+    )
     folder_input = "/veld/input/"
-    folder_output = "/veld/output/"
+    folder_output = "/veld/output/1/"
     for file_name in os.listdir(folder_input):
-        print(f"processing {folder_input + file_name}")
-        print("-----------------------------------------------")
+        print_and_log(
+            f"processing {folder_input + file_name}"
+            "\n-----------------------------------------------"
+        )
         with open(folder_input + file_name, "r") as f:
             gd_list = json.load(f)
         gd_list_new = []
@@ -126,9 +147,12 @@ def main():
             text = gd["text_raw"]
             ent_list = gd["entities"]
             ent_list = fix_borders(ent_list, text)
+            ent_list = deduplicate(ent_list)
             gd_list_new.append({"text_raw": text, "entities": ent_list})
-        print("-----------------------------------------------")
-        print(f"done. Persisting to {folder_output + file_name}")
+        print_and_log(
+            "\n-----------------------------------------------"
+            f"done. Persisting to {folder_output + file_name}"
+        )
         with open(folder_output + file_name, "w") as f:
             json.dump(gd_list_new, f, indent=2)
     
