@@ -1,7 +1,7 @@
 import json
+import logging
 import os
 import re
-import logging
 
 
 def print_and_log(msg):
@@ -128,7 +128,6 @@ def deduplicate(ent_list):
     
 
 def main():
-    
     logging.basicConfig(
         filename='/veld/output/2/clean.log',
         filemode='w',
