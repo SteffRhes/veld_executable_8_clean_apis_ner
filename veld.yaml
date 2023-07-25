@@ -1,9 +1,33 @@
 x-veld:
   executable:
+    about:
+      description: "cleans APIS NER data from whitespaces and minor noise."
+      scope: 
+        - "ETL"
+        - "data sanitization"
+    input:
+      path: /veld/input/
+      format: "json"
+      kind:
+        - "Gold Data"
+        - "NLP Gold Data"
+        - "Named Entity Recognition Gold Data"
+    output:
+      "1":
+        path: /veld/output/1/
+        format: "json"
+        kind:
+          - "Gold Data"
+          - "NLP Gold Data"
+          - "Named Entity Recognition Gold Data"
+      "2":
+        path: /veld/output/2
+        format: "txt"
+        kind: "log"
 
 services:
   veld:
     build: .
     volumes:
-      - ./:/veld/executable
+      - ./src/:/veld/executable
     command: python /veld/executable/clean.py
