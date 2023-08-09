@@ -6,24 +6,27 @@ x-veld:
         - "ETL"
         - "data sanitization"
     input:
-      path: /veld/input/
+      type: "files"
       format: "json"
-      kind:
-        - "Gold Data"
-        - "NLP Gold Data"
-        - "Named Entity Recognition Gold Data"
+      content:
+        - "gold data"
+        - "NLP gold data"
+        - "Named Entity Recognition gold data"
+      path: /veld/input/
     output:
       a:
-        path: /veld/output/a
+        type: "files"
         format: "json"
-        kind:
+        content:
           - "Gold Data"
           - "NLP Gold Data"
           - "Named Entity Recognition Gold Data"
+        path: /veld/output/a
       b:
-        path: /veld/output/b
+        type: "files"
         format: "txt"
-        kind: "log"
+        content: "log"
+        path: /veld/output/b
 
 services:
   veld:
