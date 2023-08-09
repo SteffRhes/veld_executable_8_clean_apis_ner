@@ -13,15 +13,15 @@ x-veld:
         - "NLP Gold Data"
         - "Named Entity Recognition Gold Data"
     output:
-      "1":
-        path: /veld/output/1/
+      a:
+        path: /veld/output/a
         format: "json"
         kind:
           - "Gold Data"
           - "NLP Gold Data"
           - "Named Entity Recognition Gold Data"
-      "2":
-        path: /veld/output/2
+      b:
+        path: /veld/output/b
         format: "txt"
         kind: "log"
 

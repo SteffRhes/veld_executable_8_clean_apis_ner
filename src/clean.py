@@ -129,13 +129,13 @@ def deduplicate(ent_list):
 
 def main():
     logging.basicConfig(
-        filename='/veld/output/2/clean.log',
+        filename='/veld/output/b/clean.log',
         filemode='w',
         level=logging.DEBUG,
         format='%(message)s',
     )
     folder_input = "/veld/input/"
-    folder_output = "/veld/output/1/"
+    folder_output = "/veld/output/a/"
     for file_name in os.listdir(folder_input):
         print_and_log(
             f"processing {folder_input + file_name}"
