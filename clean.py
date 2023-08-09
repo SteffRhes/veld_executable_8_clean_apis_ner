@@ -129,7 +129,7 @@ def deduplicate(ent_list):
 
 def main():
     logging.basicConfig(
-        filename='/veld/output/b/clean.log',
+        filename='/veld/output/clean.log',
         filemode='w',
         level=logging.DEBUG,
         format='%(message)s',
