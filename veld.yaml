@@ -2,7 +2,7 @@ x-veld:
   executable:
     about:
       description: "cleans APIS NER data from whitespaces and minor noise."
-      scope: 
+      topic: 
         - "ETL"
         - "data sanitization"
     input:
@@ -29,5 +29,5 @@ services:
   veld:
     build: .
     volumes:
-      - ./src/:/veld/executable
+      - ./clean.py:/veld/executable/clean.py
     command: python /veld/executable/clean.py
