@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 import re
 
 
@@ -149,6 +150,8 @@ def main():
     print_and_log(f"##################### processing {file_path_input}")
     with open(file_path_input, "r") as f:
         gd_list = json.load(f)
+        random.seed(42)
+        random.shuffle(gd_list)
         
     # cleaning
     gd_list_cleaned = []
