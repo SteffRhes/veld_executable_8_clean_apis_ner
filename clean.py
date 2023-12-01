@@ -164,7 +164,7 @@ def main():
             print_and_log(f"dropping because of no entities being present")
     print_and_log(f"##################### persisting {file_path_cleaned}")
     with open(file_path_cleaned, "w") as f:
-        json.dump(gd_list_cleaned, f, indent=2)
+        json.dump(gd_list_cleaned, f, indent=2, ensure_ascii=False)
         
     # cleaning and simplifying
     gd_list_cleaned_simplified = []
@@ -176,7 +176,7 @@ def main():
         gd_list_cleaned_simplified.append({"text_raw": text, "entities": ent_list})
     print_and_log(f"##################### persisting {file_path_cleaned_simplified}")
     with open(file_path_cleaned_simplified, "w") as f:
-        json.dump(gd_list_cleaned_simplified, f, indent=2)
+        json.dump(gd_list_cleaned_simplified, f, indent=2, ensure_ascii=False)
     
     
 if __name__ == "__main__":
