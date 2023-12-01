@@ -14,7 +14,7 @@ x-veld:
         - "Named entity recognition gold data"
       path: /veld/input/
     output:
-      a:
+      -
         type: "folder"
         format: "json"
         content:
@@ -22,7 +22,7 @@ x-veld:
           - "NLP gold data"
           - "Named entity recognition gold data"
         path: /veld/output/a
-      b:
+      -
         type: "file"
         format: "txt"
         content: "log"
