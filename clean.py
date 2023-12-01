@@ -1,12 +1,19 @@
 import json
 import logging
-import os
 import re
 
 
 def print_and_log(msg):
     print(msg)
     logging.debug(msg)
+
+
+def remove_ner_noise(ent_list):
+    """Removes suspected noise like 'PER-1337' from NER tags."""
+    ent_list_new = []
+    for e in ent_list:
+        ent_list_new.append((e[0], e[1], re.sub(r"-[0-9]*$", "", e[2])))
+    return ent_list_new
 
 
 def fix_borders(ent_list, text):
@@ -128,35 +135,48 @@ def deduplicate(ent_list):
     
 
 def main():
+    
+    # config and load uncleaned data
     logging.basicConfig(
         filename='/veld/output/clean.log',
         filemode='w',
         level=logging.DEBUG,
         format='%(message)s',
     )
-    folder_input = "/veld/input/"
-    folder_output = "/veld/output/a/"
-    for file_name in os.listdir(folder_input):
-        print_and_log(
-            f"processing {folder_input + file_name}"
-            "\n-----------------------------------------------"
-        )
-        with open(folder_input + file_name, "r") as f:
-            gd_list = json.load(f)
-        gd_list_new = []
-        for gd in gd_list:
-            text = gd["text_raw"]
-            print_and_log(f"cleaning ner data on text: {text.__repr__()}")
-            ent_list = gd["entities"]
+    file_path_input = "/veld/input/data.json"
+    file_path_cleaned = "/veld/output/apis_oebl__ner__cleaned.json"
+    file_path_cleaned_simplified = "/veld/output/apis_oebl__ner__cleaned_simplified.json"
+    print_and_log(f"##################### processing {file_path_input}")
+    with open(file_path_input, "r") as f:
+        gd_list = json.load(f)
+        
+    # cleaning
+    gd_list_cleaned = []
+    for gd in gd_list:
+        text = gd["text_raw"]
+        print_and_log(f"cleaning ner data on text: {text.__repr__()}")
+        ent_list = gd["entities"]
+        if ent_list != []:
             ent_list = fix_borders(ent_list, text)
             ent_list = deduplicate(ent_list)
-            gd_list_new.append({"text_raw": text, "entities": ent_list})
-        print_and_log(
-            "\n-----------------------------------------------"
-            f"done. Persisting to {folder_output + file_name}"
-        )
-        with open(folder_output + file_name, "w") as f:
-            json.dump(gd_list_new, f, indent=2)
+            gd_list_cleaned.append({"text_raw": text, "entities": ent_list})
+        else:
+            print_and_log(f"dropping because of no entities being present")
+    print_and_log(f"##################### persisting {file_path_cleaned}")
+    with open(file_path_cleaned, "w") as f:
+        json.dump(gd_list_cleaned, f, indent=2)
+        
+    # cleaning and simplifying
+    gd_list_cleaned_simplified = []
+    for gd in gd_list_cleaned:
+        text = gd["text_raw"]
+        ent_list = gd["entities"]
+        ent_list = remove_ner_noise(ent_list)
+        ent_list = deduplicate(ent_list)
+        gd_list_cleaned_simplified.append({"text_raw": text, "entities": ent_list})
+    print_and_log(f"##################### persisting {file_path_cleaned_simplified}")
+    with open(file_path_cleaned_simplified, "w") as f:
+        json.dump(gd_list_cleaned_simplified, f, indent=2)
     
     
 if __name__ == "__main__":
