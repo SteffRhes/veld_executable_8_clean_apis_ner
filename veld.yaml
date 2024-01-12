@@ -34,3 +34,6 @@ services:
     volumes:
       - ./clean.py:/veld/executable/clean.py
     command: python /veld/executable/clean.py
+    environment:
+      - PREFECT_API_URL=REPLACE_ME
+      - DEPLOYMENT_NAME=REPLACE_ME

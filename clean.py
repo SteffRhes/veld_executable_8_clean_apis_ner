@@ -1,12 +1,20 @@
 import json
-import logging
+import os
 import random
 import re
+from prefect import flow
+
+
+LOG_FILE = "/veld/output/clean.log" 
 
 
 def print_and_log(msg):
     print(msg)
-    logging.debug(msg)
+    # because prefect's flow import causes interference with python's logging (probably because it
+    # wants full control over it, which might be fair enough), logging in this script here is done
+    # by writing to the file directly.
+    with open(LOG_FILE, 'a') as log_file:
+        log_file.write(msg + "\n")
 
 
 def remove_ner_noise(ent_list):
@@ -135,15 +143,14 @@ def deduplicate(ent_list):
     return ent_list_new
     
 
-def main():
+@flow(log_prints=False)
+def veld_executable_8_clean_apis_ner():
+
+    # delete content of log file
+    with open(LOG_FILE, 'w') as log_file:
+        log_file.write("")
     
     # config and load uncleaned data
-    logging.basicConfig(
-        filename='/veld/output/clean.log',
-        filemode='w',
-        level=logging.DEBUG,
-        format='%(message)s',
-    )
     file_path_input = "/veld/input/data.json"
     file_path_cleaned = "/veld/output/apis_oebl__ner__cleaned.json"
     file_path_cleaned_simplified = "/veld/output/apis_oebl__ner__cleaned_simplified.json"
@@ -183,4 +190,5 @@ def main():
     
     
 if __name__ == "__main__":
-    main()
+    veld_executable_8_clean_apis_ner.serve(os.getenv("DEPLOYMENT_NAME"))
+
